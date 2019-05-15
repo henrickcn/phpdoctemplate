@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <style>
+	[v-cloak] {
+	  display:none !important;
+	}
+  </style>
+</head>
+<body>
+  <div id="app" v-cloak>
+  	<el-row :gutter="20">
+	  <el-col :span="10">
+		<el-form ref="form" :model="form" label-width="120px">
+		  <el-form-item label="模板占位符">
+		    <el-tabs v-model="activeName" @tab-click="handleClick">
+			    <el-tab-pane label="全部" name="t1">
+			    	<el-tag v-clipboard:copy="val"
+	      v-clipboard:success="onCopy"
+	      v-clipboard:error="onError" v-for="(val,index) in labelList" style="margin-right:10px;cursor: pointer;">{{val}}</el-tag>
+			    </el-tab-pane>
+			    <el-tab-pane label="承租人" name="t2">
+			    	<el-tag v-clipboard:copy="index"
+	      v-clipboard:success="onCopy"
+	      v-clipboard:error="onError" v-for="(val,index) in labelAll[0]" style="margin-right:10px;cursor: pointer;">{{index}}</el-tag>
+			    </el-tab-pane>
+			    <el-tab-pane label="监管方" name="t3">
+			    	<el-tag v-clipboard:copy="index"
+	      v-clipboard:success="onCopy"
+	      v-clipboard:error="onError" v-for="(val,index) in labelAll[1]" style="margin-right:10px;cursor: pointer;">{{index}}</el-tag>
+			    </el-tab-pane>
+			    <el-tab-pane label="房屋信息" name="t4">
+			    	<el-tag v-clipboard:copy="index"
+	      v-clipboard:success="onCopy"
+	      v-clipboard:error="onError" v-for="(val,index) in labelAll[2]" style="margin-right:10px;cursor: pointer;">{{index}}</el-tag>
+			    </el-tab-pane>
+			  </el-tabs>
+		  </el-form-item>
+		  <el-form-item label="上传合同模板">
+		  	<el-upload
+			  class="upload-demo"
+			  action="upload.php"
+			  :on-success="success"
+			  accept="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+			  :limit="1">
+			  <el-button size="small" type="primary">点击上传</el-button>
+			  <div slot="tip" class="el-upload__tip">只能上传docx文件，且不超过100MB</div>
+			</el-upload>
+		  </el-form-item>
+		  <el-form-item>
+		  	<el-button @click="priew" type="success" round v-show="uploadStatus">预览合同<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+		  </el-form-item>
+		</el-form>
+	  <div style="width: 50%;position: fixed;right: 0px;bottom: 0px;top: 0px;">
+		<el-breadcrumb separator-class="el-icon-arrow-right">
+		  <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+		  <el-breadcrumb-item :to="{ path: '/about' }">示例合同预览</el-breadcrumb-item>
+		</el-breadcrumb>
+		<iframe src="http://baidu.com" name="right-win" style="border: 0px;height: 100%;width: 100%"></iframe>
+	  </div>
+	
+
+	
+
+    <el-dialog :visible.sync="visible" title="Hello world">
+      <p>Try Element</p>
+    </el-dialog>
+  </div>
+</body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/jquery@3.3.1/dist/jquery.js"></script>
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+  <script src="tpl/vue-clipboard.min.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+  	var labelAll = [];
+  	$.ajax({
+  		url: 'api.php?act=getlabel',
+  		dataType: 'json',
+  		success: function (data) {
+  			labelAll = data;
+  			vLabelAll = [];
+  			$.each(labelAll,function (index,val) {
+  				// body...
+  				$.each(val,function (i,v) {
+  					// body...
+  					vLabelAll.push(i);
+  				});
+  			});
+  			new Vue({
+		      el: '#app',
+		      data: function() {
+		        return { 
+		        	visible: false ,
+		        	form:{},
+		        	activeName:'t1',
+		        	labelList:vLabelAll,
+		        	labelAll: labelAll,
+		        	fileList: [],
+		        	uploadStatus: false,
+		        	fileInfo:''
+		        }
+		      },
+			    methods: {
+			      handleClick(value){
+			      	console.log(value.value);
+			      },
+			      onCopy: function (e) {
+			      	this.$message({
+			          message: '恭喜你，复制成功',
+			          type: 'success',
+			          duration: 2000,
+			          showClose: true
+			        });
+				     
+				  },
+				  onError: function (e) {
+				      this.$message.error('复制失败');
+				  },
+				  success(data) {
+				  	this.uploadStatus = true;
+			        this.fileInfo = data.path;
+			      },
+			      priew: function () {
+			      	 window.open('https://view.officeapps.live.com/op/view.aspx?src=http://112.124.1.245:8888/'+this.fileInfo,'right-win');
+			      }
+			    }
+		    })
+  		}
+  	});
+    
+  </script>
+</html>
