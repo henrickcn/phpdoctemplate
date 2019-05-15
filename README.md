@@ -11,3 +11,4 @@
 > 本例中仅仅是简单的根据模板文件生成word文件，如需用其他更高级的用法，可以到phpoffice的官网文档中找到答案。
 
 ## 相关截图
+![界面截图](https://github.com/henrickcn/phpdoctemplate/blob/master/img.jpg)
